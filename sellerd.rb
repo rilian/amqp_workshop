@@ -26,7 +26,9 @@ EventMachine.run do
 
     market_ex = channel.topic("market", auto_delete: true)
 
-    10.times do
+    EM.add_periodic_timer(1) do
+      puts "I waited 1 seconds"
+      #EM.stop_event_loop
       market_ex.publish(@seller.announce, routing_key: "market.ads.#{@seller_id}")
     end
 
