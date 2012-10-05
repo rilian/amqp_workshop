@@ -15,7 +15,7 @@ module DaemonMarket
       return false unless valid_pin?(from, pin)
 
       old_from = accounts[from].money
-      pld_to   = accounts[to].money
+      old_to   = accounts[to].money
 
       accounts[from].withdraw(amount)
       accounts[to].put(amount)
