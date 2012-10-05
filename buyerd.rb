@@ -13,10 +13,25 @@ require 'randomizer'
 
 @logger = Logger.new(STDOUT)
 @buyer = DaemonMarket::Buyer.new(list: DaemonMarket::Randomizer.random_list, account: {pin: 1234, id: 'buyer_1', money: 100 })
+@buyer_id = 'buyer_1'
 
 EventMachine.run do
 
   @logger.info "Started buyer #{@buyer.account.id} wanting to buy #{@buyer.list.inspect}"
+
+  AMQP.start("amqp://guest:guest@192.168.1.130/dima") do |client|
+    @connection = connection
+
+    channel = AMQP::Channel.new(@connection)
+
+    market_ex = channel.topic("market", auto_delete: true)
+
+    market_q = channel.queue("market.#{@buyer_id}") do |queue|
+      queue.bind(market_ex, routing_key: "market.ads.#").subscribe do |metadata, payload|
+        @logger.info("Got #{payload} with metadata")
+      end
+    end
+  end
 
   on_exit_signal = Proc.new do
     @logger.info "Closing connections..."
