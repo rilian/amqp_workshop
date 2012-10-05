@@ -19,7 +19,7 @@ EventMachine.run do
 
   @logger.info "Started buyer #{@buyer.account.id} wanting to buy #{@buyer.list.inspect}"
 
-  AMQP.start("amqp://guest:guest@192.168.1.130/dima") do |client|
+  AMQP.start("amqp://guest:guest@192.168.1.130/dima") do |connection|
     @connection = connection
 
     channel = AMQP::Channel.new(@connection)
